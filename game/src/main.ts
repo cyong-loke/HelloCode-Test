@@ -219,7 +219,11 @@ const unlockOnce = () => {
 };
 window.addEventListener('pointerdown', unlockOnce);
 
-if ('serviceWorker' in navigator) {
+// Builds that ship without a service worker (the standalone artifact bundle)
+// set this, so we do not fire a request that can only 404.
+const swDisabled = (window as unknown as { __pactNoSW?: boolean }).__pactNoSW === true;
+
+if ('serviceWorker' in navigator && !swDisabled) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(() => {
       /* Offline support is a bonus — a failure here must never block the game. */
