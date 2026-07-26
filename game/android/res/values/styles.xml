@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+    Fullscreen from the first frame. The window background matches the game's
+    void so launching never flashes white before the canvas paints.
+  -->
+  <style name="PactTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+    <item name="android:windowBackground">@color/void_black</item>
+    <item name="android:colorBackground">@color/void_black</item>
+  </style>
+</resources>
