@@ -126,9 +126,13 @@ export class Spawner {
     e.x = run.player.x + Math.cos(a) * (run.spawnRadius + 40);
     e.y = run.player.y + Math.sin(a) * (run.spawnRadius + 40);
     e.vx = e.vy = 0;
-    // Tuned against a level-30 build: roughly a 20-second fight. Dread is the
-    // dominant term, so the greedier the run, the larger the thing at the end.
-    e.maxHp = e.hp = 14000 + run.t * 30 + run.dread * 140;
+    // Boss damage-per-second was sampled across five full runs: a build that
+    // actually invested in its weapons lands around 1.0-1.5k, which puts this
+    // at a 16-24 second fight. Builds that spread every level across passives
+    // measure far lower, but those runs die here rather than out-damaging it,
+    // which is the intended outcome. Dread is the dominant term, so the
+    // greedier the run, the larger the thing waiting at the end of it.
+    e.maxHp = e.hp = 11000 + run.t * 24 + run.dread * 105;
     e.r = 46;
     e.speed = 52;
     e.dmg = 26;

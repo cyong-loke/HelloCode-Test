@@ -8,7 +8,9 @@ export default defineConfig({
   base: './',
   plugins: [viteSingleFile({ removeViteModuleLoader: true })],
   build: {
-    target: 'es2020',
+    // Android 7's stock WebView is Chrome 51. It is usually updated via Play,
+    // but a stale one must not hard-fail on `?.` or class fields.
+    target: 'es2015',
     cssCodeSplit: false,
     assetsInlineLimit: 100_000_000,
     reportCompressedSize: false,

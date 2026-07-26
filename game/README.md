@@ -34,17 +34,20 @@ the first load.
 
 ### As a native app
 
-The build is a self-contained web app, so wrapping it needs no code changes:
+Android is built directly by `./android/build-apk.sh` — see below.
+
+For iOS, the build is a self-contained web app, so wrapping it needs no code
+changes:
 
 ```bash
-npm i -D @capacitor/cli @capacitor/core @capacitor/ios @capacitor/android
+npm i -D @capacitor/cli @capacitor/core @capacitor/ios
 npx cap init PACT com.yourstudio.pact --web-dir=dist
-npx cap add ios && npx cap add android
+npx cap add ios
 npm run build && npx cap sync
-npx cap open android    # or ios
+npx cap open ios
 ```
 
-That step needs Android Studio / Xcode locally, so it is left to whoever ships it.
+That needs Xcode on a Mac, so it is left to whoever ships it.
 
 ## How it is put together
 
@@ -91,3 +94,36 @@ daily Nightmare rotation with six modifiers, procedural audio, PWA packaging.
 **Not yet:** relics, the Grimoire season pass, and the ad/IAP integrations — all
 M3/M4 in the design doc. Nothing in the current architecture blocks them; the
 monetisation hooks in particular are deliberately absent rather than stubbed.
+
+## Android APK
+
+```bash
+./android/build-apk.sh          # → android/build/PACT.apk
+```
+
+The script needs only a JDK, Node and Python — no Android Studio, no Gradle, no
+SDK installer. It sources aapt2 from the `aaptjs3` npm package, `android.jar`
+from a platform mirror, and `dx` + `apksig` from Maven Central, caching them in
+`android/.tools/`. It ends by verifying the signature, the alignment and the
+manifest, so a broken APK fails the build rather than failing at install.
+
+`android/` is a plain WebView shell: one `Activity`, no Capacitor, no AndroidX.
+Worth knowing:
+
+- The page is served through `shouldInterceptRequest` under a synthetic
+  `https://pact.localhost` origin rather than loaded from `file://`. WebView
+  gives `file://` pages an opaque origin on newer Android, which silently
+  breaks `localStorage` and would wipe the player's Altar progress every launch.
+- **v2 signature only, minSdk 24.** apksig 2.3.0 is the newest build on Maven
+  Central and its v1 signer calls a `sun.security.pkcs` method modern JDKs no
+  longer expose. Signing v1 separately with `jarsigner` does not survive either,
+  because apksig strips foreign `META-INF` signatures when its own v1 signer is
+  off. v2 alone covers Android 7.0+, and Android 11+ requires v2 regardless.
+- `tools/zipalign.py` stands in for the real `zipalign`. Android 11+ rejects an
+  APK whose `resources.arsc` is compressed or not 4-byte aligned, and the `zip`
+  step that adds `classes.dex` does not preserve aapt2's alignment.
+- The APK is signed with a throwaway key generated on first build. Replace
+  `android/.tools/pact.p12` before shipping anything you intend to update later
+   — Android will not accept an update signed with a different key.
+
+The app requests **no permissions**: everything runs locally, offline.

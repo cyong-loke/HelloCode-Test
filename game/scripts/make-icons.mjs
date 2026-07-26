@@ -116,3 +116,19 @@ for (const [size, inset, name] of [
   writeFileSync(join(OUT, name), png(size, size, drawIcon(size, inset)));
   console.log('wrote', name);
 }
+
+// Android launcher icons, one per density bucket. Drawn at native size rather
+// than downscaled so the pupil stays crisp on low-density screens.
+const ANDROID = join(dirname(fileURLToPath(import.meta.url)), '..', 'android', 'res');
+for (const [bucket, size] of [
+  ['mdpi', 48],
+  ['hdpi', 72],
+  ['xhdpi', 96],
+  ['xxhdpi', 144],
+  ['xxxhdpi', 192],
+]) {
+  const dir = join(ANDROID, `mipmap-${bucket}`);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, 'ic_launcher.png'), png(size, size, drawIcon(size, 0.82)));
+}
+console.log('wrote android mipmaps');
