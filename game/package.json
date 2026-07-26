@@ -1,0 +1,19 @@
+{
+  "name": "pact-game",
+  "version": "0.1.0",
+  "description": "PACT — Gods of the Dark Hour. A horror survivor-like for mobile.",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/make-icons.mjs && tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "icons": "node scripts/make-icons.mjs",
+    "preview": "vite preview --host"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5",
+    "vite-plugin-singlefile": "^2.3.3"
+  },
+  "private": true,
+  "type": "module"
+}
